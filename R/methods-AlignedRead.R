@@ -44,7 +44,7 @@ setMethod("strand", "AlignedRead", function(object, ...)
 
 ## coerce
 
-setAs("PairwiseAlignment", "AlignedRead",
+setAs("PairwiseAlignedFixedSubject", "AlignedRead",
       function(from, to) {
         pat <- pattern(from)
         quality <- character()
