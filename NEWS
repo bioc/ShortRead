@@ -81,6 +81,8 @@ BUG FIXES
 
     o readAligned MAQMapview failed for most chromosome labels
 
+    o coverage,AlignedRead-method correctly trims trailing uncovered
+    nucleotides when invoked with default arguments
 
         **************************************************
         *                                                *
