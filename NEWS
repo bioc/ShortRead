@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.8
+----------------------
+
+BUG FIXES
+
+    o Restore report() performance
+
+NEW FEATURES
+
+    o Support HiSeq tile layout
+
 CHANGES IN VERSION 1.7
 ----------------------
 

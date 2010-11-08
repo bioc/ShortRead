@@ -89,8 +89,7 @@
         }, cvg))
 
     ## Entire lane, non-zero coverage
-    df <-
-        with(count[count$Coverage!=0,], {
+    with(count[count$Coverage!=0,], {
         res <- tapply(as.numeric(Count), Coverage, sum)
         count <- as.vector(res)
         data.frame(Coverage=as.numeric(names(res)), Count= count,
@@ -125,14 +124,13 @@ if(missing(Lpattern) && missing(Rpattern)) {
 .ppnCount <- function(m)
 {
     ## if adapterContamination not run
-    if(is.factor(m[,-1]))
-        return(m)
-    else {
-    ## scale subsequent columns to be proportions of
-    ## first column
+    if(is.null(m) || is.factor(m[,-1]))
+        m <- "Not available."
+    else if (!is.factor(m[,-1]))
+        ## scale subsequent columns to be proportions of
+        ## first column
         m[,-1] <- round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
-        return(m)
-    }
+    m
 }
 
 .df2a <- function(df, fmt="%.3g")
@@ -211,14 +209,6 @@ if(missing(Lpattern) && missing(Rpattern)) {
            aspect=2)
 }
 
-.plotTileLocalCoords <- function(tile, nrow)
-{
-    row <- 1 + (tile - 1) %% nrow
-    col <- 1 + floor((tile -1) / nrow)
-    row[col%%2==0] <- nrow + 1 - row[col%%2==0]
-    list(row=as.integer(row), col=as.factor(col))
-}
-
 .atQuantile <- function(x, breaks)
 {
     at <- unique(quantile(x, breaks))
@@ -236,6 +226,7 @@ if(missing(Lpattern) && missing(Rpattern)) {
 {
     n <- as.character(max(tileIndicies))
     switch(n,
+           "68"=c(8, 4),
            "100"=c(50, 2),
            "120"=c(60, 2),
            "300"=c(100, 3),
@@ -247,10 +238,24 @@ if(missing(Lpattern) && missing(Rpattern)) {
            })
 }
 
+.plotTileLocalCoords <- function(tile, nrow)
+{
+    if (nrow == 8) {
+        ## HiSeq
+        row <- tile %% 20
+        col <- floor(tile / 20) %% 4 + 1L
+    } else {
+        row <- 1 + (tile - 1) %% nrow
+        col <- 1 + floor((tile -1) / nrow)
+        row[col%%2==0] <- nrow + 1 - row[col%%2==0]
+    }
+    list(row=as.integer(row), col=as.factor(col))
+}
+
 .plotTileCounts <-
     function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
-    df <- df[!is.na(df$count),]
+    df <- df[df$count != 0,]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$count, seq(0, 1, .1))
@@ -299,13 +304,31 @@ if(missing(Lpattern) && missing(Rpattern)) {
            aspect=2)
 }
 
+.fivenum <-
+    function(rle)
+{
+    n <- length(rle)
+    n4 <- floor((n + 3)/2)/2
+    d <- c(1, n4, (n + 1)/2, n + 1 - n4, n)
+    0.5 * as.numeric(rle[floor(d)] + rle[ceiling(d)])
+}
+
+.boxplot.stats <-
+    function(score, count, coef=1.5)
+{
+    x <- Rle(score, count)
+    stats <- .fivenum(x)
+    iqr <- diff(stats[c(2, 4)])
+    out <- x < (stats[2L] - coef * iqr) | x > (stats[4L] + coef * iqr)
+    list(stats = stats, out = runValue(x[out]))
+}
+
 .plotCycleQuality <- function(df)
 {
- cycleStats <- with(df,
-    {
+    cycleStats <- with(df, {
         tapply(seq_len(nrow(df)), list(lane, Cycle), function(i)
         {
-            ns <- boxplot.stats(rep(Score[i], Count[i]))
+            ns <- .boxplot.stats(Score[i], Count[i])
             data.frame(Score=c(ns$stats, unique(ns$out)), Cycle=Cycle[i][1],
                        Lane=lane[i][1])
         })
@@ -348,6 +371,8 @@ if(missing(Lpattern) && missing(Rpattern)) {
 .plotDepthOfCoverage <-
     function(df, ...)
 {
+    if (is.null(df))
+        return(NULL)
     xyplot(CumulativePpn~Coverage | Lane, df, type="b", pch=20,
            scales=list(x=list(log=TRUE)),
            ylab="Cumulative Proportion of Nucleotides", aspect=2, ...)
