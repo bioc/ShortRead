@@ -55,7 +55,7 @@ txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
                          package="yeastNagalakshmi")
 
 ## either use a txdb file quaried from UCSC or use existing TxDb packages.
-txdb <- loadFeatures(txdbFile)
+txdb <- loadDb(txdbFile)
 
 grl <- exonsBy(txdb, by="gene")
 file <- system.file("extdata", "SRR002051.chrI-V.bam",
