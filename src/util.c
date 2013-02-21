@@ -215,7 +215,7 @@ SEXP _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
     return ans;
 }
 
-const int LINEBUF_SIZE = 20001;
+const int LINEBUF_SIZE = 200001;
 
 /*
  * open and check file; signal error
@@ -337,7 +337,7 @@ void _as_factor(SEXP vec, const char **levels, const int n_lvls)
  */
 static int _count_lines(gzFile * file)
 {
-    const int LINEBUF_SIZE = 20001;
+    const int LINEBUF_SIZE = 200001;
     size_t bytes_read;
     char buf[LINEBUF_SIZE + 1];
     int lines = 0;
