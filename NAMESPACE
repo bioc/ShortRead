@@ -1,12 +1,18 @@
 useDynLib(ShortRead, .registration=TRUE)
 
 import(zlibbioc, methods, BiocGenerics, S4Vectors, IRanges,
-    Biostrings, GenomeInfoDb, GenomicRanges, GenomicAlignments,
+    GenomeInfoDb, GenomicRanges, GenomicAlignments,
     Rsamtools, Biobase)
 
 importFrom(BiocParallel, bplapply)
 
-importFrom(pwalign, pairwiseAlignment)
+importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
+           DNA_ALPHABET, PDict, QualityScaledDNAStringSet, alphabet,
+           alphabetFrequency, detail, get_seqtype_conversion_lookup,
+           mkAllStrings, pattern, quality, readDNAStringSet, reverseComplement,
+           trimLRPatterns, vcountPDict, writeXStringSet, xscodes)
+
+importFrom(pwalign, pairwiseAlignment, unaligned)
 
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
