@@ -4,7 +4,7 @@ author:
 - name: "Martin Morgan"
 - name: "Rohit Satyam"
   affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
-date: "Modified: 21 October 2013. Compiled: `r format(Sys.Date(), '%B %d, %Y')`"
+date: "Modified: 23 April 2024. Compiled: `r format(Sys.Date(), '%B %d, %Y')`"
 package: ShortRead
 vignette: >
   %\VignetteIndexEntry{An introduction to ShortRead}
@@ -404,8 +404,9 @@ fqNoPolyA <- fq[countA < 30]
 subject.
 
 Users wanting to use *R* for whole-genome alignments or more flexible pairwise
-alignment are encouraged to investigate the `r Biocpkg("Biostrings")` package,
-especially the _PDict_ class and `matchPDict` and `pairwiseAlignment` functions.
+alignment are encouraged to investigate the `r Biocpkg("Biostrings")` and
+`r Biocpkg("pwalign")` packages, especially the _PDict_ class and `matchPDict`
+and `pairwiseAlignment` functions.
 
 # Legacy support for early file formats
 

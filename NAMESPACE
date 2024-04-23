@@ -6,6 +6,8 @@ import(zlibbioc, methods, BiocGenerics, S4Vectors, IRanges,
 
 importFrom(BiocParallel, bplapply)
 
+importFrom(pwalign, pairwiseAlignment)
+
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
 importFrom(hwriter, hwrite, hwriteImage)
