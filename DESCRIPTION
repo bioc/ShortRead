@@ -25,9 +25,9 @@ Depends: BiocGenerics (>= 0.23.3), BiocParallel, Biostrings (>=
         2.47.6), Rsamtools (>= 1.31.2), GenomicAlignments (>= 1.15.6)
 Imports: Biobase, S4Vectors (>= 0.17.25), IRanges (>= 2.13.12),
         GenomeInfoDb (>= 1.15.2), GenomicRanges (>= 1.31.8), pwalign,
-        hwriter, methods, zlibbioc, lattice, latticeExtra,
+        hwriter, methods, lattice, latticeExtra,
 Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi, knitr
-LinkingTo: S4Vectors, IRanges, XVector, Biostrings, Rhtslib, zlibbioc
+LinkingTo: S4Vectors, IRanges, XVector, Biostrings, Rhtslib
 biocViews: DataImport, Sequencing, QualityControl
 URL: https://bioconductor.org/packages/ShortRead,
     https://github.com/Bioconductor/ShortRead,
