@@ -41,8 +41,8 @@ struct _BufferNode {
 
 struct _BufferNode *_BufferNode_new()
 {
-    struct _BufferNode *node = Calloc(1, struct _BufferNode);
-    node->curr = node->buf = Calloc(_BUFFERNODE_SIZE, char);
+    struct _BufferNode *node = R_Calloc(1, struct _BufferNode);
+    node->curr = node->buf = R_Calloc(_BUFFERNODE_SIZE, char);
     node->n = 0;
     node->buf_size = _BUFFERNODE_SIZE;
     node->next = NULL;
@@ -51,8 +51,8 @@ struct _BufferNode *_BufferNode_new()
 
 void _BufferNode_free(struct _BufferNode *node)
 {
-    Free(node->buf);
-    Free(node);
+    R_Free(node->buf);
+    R_Free(node);
 }
 
 void _BufferNode_encode(struct _BufferNode *node, const char *lkup)
@@ -100,9 +100,9 @@ SEXP _BufferNode_snap(struct _BufferNode * node, const int *offset,
 
 struct _Buffer *_Buffer_new(int n_offsets, const char *baseclass)
 {
-    struct _Buffer *buffer = Calloc(1, struct _Buffer);
-    buffer->baseclass = Calloc(strlen(baseclass) + 1, char);
-    buffer->offset = Calloc(n_offsets, int);
+    struct _Buffer *buffer = R_Calloc(1, struct _Buffer);
+    buffer->baseclass = R_Calloc(strlen(baseclass) + 1, char);
+    buffer->offset = R_Calloc(n_offsets, int);
     buffer->i_offset = 0;
     strcpy(buffer->baseclass, baseclass);
     buffer->root = buffer->curr = _BufferNode_new();
@@ -117,9 +117,9 @@ void _Buffer_free(struct _Buffer *buf)
         curr = curr->next;
         _BufferNode_free(tmp);
     }
-    Free(buf->offset);
-    Free(buf->baseclass);
-    Free(buf);
+    R_Free(buf->offset);
+    R_Free(buf->baseclass);
+    R_Free(buf);
 }
 
 void _Buffer_append(struct _Buffer *buf, const char *s)

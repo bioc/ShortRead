@@ -140,7 +140,7 @@ void _count_ipar_int_recs(gzFile file, int *n_recs, int *n_cycles)
     const char CYCLE_END = '#';
     const int LINEBUF_SIZE = 200001;
     size_t bytes_read = 0;
-    char *buf = Calloc(LINEBUF_SIZE + 1, char);
+    char *buf = R_Calloc(LINEBUF_SIZE + 1, char);
     *n_recs = *n_cycles = 0;
     char *p = 0;
     /* records and cycles */
@@ -168,7 +168,7 @@ void _count_ipar_int_recs(gzFile file, int *n_recs, int *n_cycles)
             *n_cycles += 1;
         }
     }
-    Free(buf);
+    R_Free(buf);
 }
 
 SEXP count_ipar_int_recs(SEXP fnames)

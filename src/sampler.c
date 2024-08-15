@@ -193,13 +193,13 @@ struct sampler {
 
 struct sampler * _sampler_new(int n)
 {
-    struct sampler *sampler = Calloc(1, struct sampler);
-    sampler->sample = Calloc(1, struct records);
-    sampler->sample->records = Calloc(n, struct record);
+    struct sampler *sampler = R_Calloc(1, struct sampler);
+    sampler->sample = R_Calloc(1, struct records);
+    sampler->sample->records = R_Calloc(n, struct record);
     sampler->sample->n = n;
-    sampler->current.records = Calloc(n, struct record);
+    sampler->current.records = R_Calloc(n, struct record);
     sampler->current.n = n;
-    sampler->bufnode = Calloc(1, struct bufnode);
+    sampler->bufnode = R_Calloc(1, struct bufnode);
     return sampler;
 }
 
@@ -207,9 +207,9 @@ void _sampler_reset(struct sampler *sampler)
 {
     struct records *sample = sampler->sample;
     for (int i = 0; i < sample->n_curr; ++i)
-        Free(sample->records[i].record);
+        R_Free(sample->records[i].record);
     if (NULL != sampler->bufnode->bytes)
-        Free(sampler->bufnode->bytes);
+        R_Free(sampler->bufnode->bytes);
     sample->n_curr = sample->n_added = sample->n_tot = 0;
     sampler->current.n_curr = 0;
 }
@@ -218,14 +218,14 @@ void _sampler_free(struct sampler *sampler)
 {
     struct records *sample = sampler->sample;
     for (int i = 0; i < sample->n_curr; ++i)
-        Free(sample->records[i].record);
+        R_Free(sample->records[i].record);
     if (NULL != sampler->bufnode->bytes)
-        Free(sampler->bufnode->bytes);
-    Free(sampler->sample->records);
-    Free(sampler->sample);
-    Free(sampler->current.records);
-    Free(sampler->bufnode);
-    Free(sampler);
+        R_Free(sampler->bufnode->bytes);
+    R_Free(sampler->sample->records);
+    R_Free(sampler->sample);
+    R_Free(sampler->current.records);
+    R_Free(sampler->bufnode);
+    R_Free(sampler);
 }
 
 void _sampler_add1(struct records *sample, const Rbyte *record,
@@ -233,11 +233,11 @@ void _sampler_add1(struct records *sample, const Rbyte *record,
 {
     /* add record to sample */
     if (sample->n_curr == sample->n)
-        Free(sample->records[idx].record);
+        R_Free(sample->records[idx].record);
 
     sample->records[idx].length = len;
     sample->records[idx].order = order;
-    Rbyte *intern_record = Calloc(len, Rbyte);
+    Rbyte *intern_record = R_Calloc(len, Rbyte);
     memcpy(intern_record, record, len * sizeof(Rbyte));
     sample->records[idx].record = intern_record;
     sample->n_added += 1;
@@ -247,7 +247,7 @@ void _sampler_add1(struct records *sample, const Rbyte *record,
 int * _sampler_wout_replacement(int n, int k)
 {
     /* sample k of n without replacement */
-    int *idx = Calloc(n, int);
+    int *idx = R_Calloc(n, int);
     for (int i = 0; i < n; ++i)
         idx[i] = i;
     for (int i = 0; i < k; ++i) {
@@ -278,8 +278,8 @@ void _sampler_dosample(struct sampler *sampler)
                           r->order, drop[i]);
         }
 
-        Free(keep);
-        Free(drop);
+        R_Free(keep);
+        R_Free(drop);
     }
     sampler->sample->n_tot = n_tot;
     sampler->current.n_curr = 0;
@@ -313,9 +313,9 @@ void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
                           int len)
 {
     if (NULL != sampler->bufnode->bytes)
-        Free(sampler->bufnode->bytes);
+        R_Free(sampler->bufnode->bytes);
     if (NULL != record) {
-        Rbyte *bytes = Calloc(len, Rbyte);
+        Rbyte *bytes = R_Calloc(len, Rbyte);
         memcpy(bytes, record, len * sizeof(Rbyte));
         sampler->bufnode->bytes = bytes;
     }
@@ -355,15 +355,15 @@ SEXP sampler_add(SEXP s, SEXP bin)
 
     if (scratch->bytes) {
         int len = Rf_length(bin), buflen = scratch->len + len;
-        Rbyte *buf = Calloc(buflen, Rbyte), *obuf = scratch->bytes;
+        Rbyte *buf = R_Calloc(buflen, Rbyte), *obuf = scratch->bytes;
         memcpy(buf, scratch->bytes, scratch->len * sizeof(Rbyte));
-        Free(obuf);
+        R_Free(obuf);
         memcpy(buf + scratch->len, RAW(bin), len * sizeof(Rbyte));
         scratch->bytes = buf;
         scratch->len = buflen;
     } else {
         int buflen = Rf_length(bin);
-        Rbyte *buf = Calloc(buflen, Rbyte);
+        Rbyte *buf = R_Calloc(buflen, Rbyte);
         memcpy(buf, RAW(bin), buflen * sizeof(Rbyte));
         scratch->bytes = buf;
         scratch->len = buflen;
@@ -387,14 +387,14 @@ SEXP sampler_add(SEXP s, SEXP bin)
 
     if (bufend - buf) {
         int len = bufend - buf;
-        Rbyte *tail = Calloc(len, Rbyte);
+        Rbyte *tail = R_Calloc(len, Rbyte);
         memcpy(tail, buf, len * sizeof(Rbyte));
-        Free(scratch->bytes);
+        R_Free(scratch->bytes);
         scratch->bytes = tail;
         scratch->len = len;
     } else {
         scratch->len = 0;
-        Free(scratch->bytes);
+        R_Free(scratch->bytes);
     }
 
     return s;
@@ -430,9 +430,9 @@ struct streamer {
 
 struct streamer * _streamer_new(int n)
 {
-    struct streamer *streamer = Calloc(1, struct streamer);
-    streamer->stream = Calloc(1, struct records);
-    streamer->stream->records = Calloc(n, struct record);
+    struct streamer *streamer = R_Calloc(1, struct streamer);
+    streamer->stream = R_Calloc(1, struct records);
+    streamer->stream->records = R_Calloc(n, struct record);
     streamer->stream->n = n;
     return streamer;
 }
@@ -446,8 +446,8 @@ void _streamer_reset(struct streamer *streamer)
         while (NULL != bufnode) {
             prev = bufnode;
             bufnode = prev->next;
-            Free(prev->bytes);
-            Free(prev);
+            R_Free(prev->bytes);
+            R_Free(prev);
         }
         streamer->bufnode->next = NULL;
     }
@@ -459,12 +459,12 @@ void _streamer_free(struct streamer *streamer)
     while (next) {
         curr = next;
         next = curr->next;
-        Free(curr->bytes);
-        Free(curr);
+        R_Free(curr->bytes);
+        R_Free(curr);
     }
-    Free(streamer->stream->records);
-    Free(streamer->stream);
-    Free(streamer);
+    R_Free(streamer->stream->records);
+    R_Free(streamer->stream);
+    R_Free(streamer);
 }
 
 void _streamer_add(struct records *stream, const Rbyte *record,
@@ -509,20 +509,20 @@ SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
     struct bufnode *scratch = streamer->bufnode;
     if (NULL == scratch) {
         /* first record */
-        scratch = streamer->bufnode = Calloc(1, struct bufnode);
+        scratch = streamer->bufnode = R_Calloc(1, struct bufnode);
     }
     if (NULL == scratch->bytes) {
         /* nothing 'extra' from previous bin */
-        scratch->bytes = Calloc(len, Rbyte);
+        scratch->bytes = R_Calloc(len, Rbyte);
         scratch->len = len;
         memcpy(scratch->bytes, RAW(bin), len * sizeof(Rbyte));
     } else {
         /* scratch contains tail of prev. bin */
         int buflen = scratch->len;
-        Rbyte *bytes = Calloc(buflen + len, Rbyte);
+        Rbyte *bytes = R_Calloc(buflen + len, Rbyte);
         memcpy(bytes, scratch->bytes, buflen * sizeof(Rbyte));
         memcpy(bytes + buflen, RAW(bin), len * sizeof(Rbyte));
-        Free(scratch->bytes);
+        R_Free(scratch->bytes);
         scratch->bytes = bytes;
         scratch->len = buflen + len;
     }
@@ -549,12 +549,12 @@ SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
     /* capture tail of bin */
     if (NULL != scratch->bytes) {
         struct bufnode *next = scratch;
-        scratch = streamer->bufnode = Calloc(1, struct bufnode);
+        scratch = streamer->bufnode = R_Calloc(1, struct bufnode);
         scratch->next = next;
     }
     if (bufend - buf) {
         int len = bufend - buf;
-        Rbyte *tail = Calloc(len, Rbyte);
+        Rbyte *tail = R_Calloc(len, Rbyte);
         memcpy(tail, buf, len * sizeof(Rbyte));
         scratch->bytes = tail;
         scratch->len = len;
