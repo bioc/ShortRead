@@ -94,12 +94,12 @@ template < int max_readlen > maqmap_T < max_readlen >
     if (mm->format != MAQMAP_FORMAT_NEW) {
         if (mm->format > 0) {
             maq_delete_maqmap(mm);
-            error
+            Rf_error
                 ("obsolete map format; use MAQ 'mapass2maq' command to convert");
         }
         if (mm->format != MAQMAP_FORMAT_NEW) {
             maq_delete_maqmap(mm);
-            error("MAQ format '%d' not supported", mm->format);
+            Rf_error("MAQ format '%d' not supported", mm->format);
         }
     }
     gzread(fp, &mm->n_ref, sizeof(int));

@@ -19,15 +19,15 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
    int name_len, seq_ori_len, seq_len;
    char seq_name[201];
    std::deque< seq_meta_info > seqs;
-   if( (! isString(bfa_filename) ) || ( length(bfa_filename) != 1 ) )
-      error( "First argument invalid: should be the filename." );
+   if( (! Rf_isString(bfa_filename) ) || ( Rf_length(bfa_filename) != 1 ) )
+      Rf_error( "First argument invalid: should be the filename." );
 
    fp = fopen( CHAR(STRING_ELT(bfa_filename,0)), "r" );
    if( !fp ) {
       char buf[300];
       snprintf( buf, 300, "Failed to open file '%s': %s (errno=%d)",
          CHAR(STRING_ELT(bfa_filename,0)), strerror(errno), errno );
-      error( "%s", buf );
+      Rf_error( "%s", buf );
    }
    while( fread( &name_len, sizeof(int), 1, fp) ) {
       if( name_len > 200 )
@@ -44,15 +44,15 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
    fclose( fp );
    
    SEXP res, names;
-   PROTECT( res = allocVector( INTSXP, seqs.size() ) );   
-   PROTECT( names = allocVector( STRSXP, seqs.size() ) );   
+   PROTECT( res = Rf_allocVector( INTSXP, seqs.size() ) );   
+   PROTECT( names = Rf_allocVector( STRSXP, seqs.size() ) );   
    int i = 0;
    for( std::deque< seq_meta_info >::iterator a = seqs.begin(); 
          a != seqs.end(); a++, i++ ) {
       INTEGER(res)[i] = a->len;      
-      SET_STRING_ELT( names, i, mkChar( a->name.c_str() ) );
+      SET_STRING_ELT( names, i, Rf_mkChar( a->name.c_str() ) );
    }
-   namesgets( res, names);   
+   Rf_namesgets( res, names);   
    UNPROTECT(2);
    return res;
 }   
